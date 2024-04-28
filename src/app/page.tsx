@@ -1,113 +1,308 @@
 import Image from "next/image";
+import Link from "next/link";
+import { RegisterLink, LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { CircleUser, Menu, Package2, Leaf, Search } from "lucide-react";
+import { CardContent, Card } from "@/components/ui/card"
 
-export default function Home() {
+
+export default async function Home() {
+  
+  const { isAuthenticated, getUser } = getKindeServerSession();
+  const user = await getUser();
+
+
+
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <main>
+      {/* <h1>HOME PAGE</h1>
+      <div>
+        <Button>
+          <LoginLink>Sign in</LoginLink>
+        </Button>
+        <Button>
+          <RegisterLink>Sign Up</RegisterLink>
+        </Button>
+        <Button>
+          <LogoutLink>Log Out</LogoutLink>
+        </Button>
+        <Link className={buttonVariants({ variant: "outline" })} href='https://google.com'>Click here</Link>
+      </div>
+      <div>
+        User:{user?.given_name}
+      </div> */}
+      
+      {/* DIVIDER */}
+      <div className="flex flex-col min-h-[100dvh]">
+      <main className="flex-1">
+        <section className="w-full py-6 md:py-12 xl:py-24">
+          <div className="container flex flex-col items-center justify-center px-4 space-y-4 md:flex-row md:space-y-0 md:gap-10 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 md:order-last md:text-center md:space-y-2">
+              <h1 className="text-4xl font-bold tracking-tighter lg:text-6xl xl:text-7xl/none">
+                Fresh Groceries, Always
+              </h1>
+              <p className="max-w-[600px] text-gray-500/relaxed dark:text-gray-400">
+                Order fresh fruits, vegetables, dairy, and pantry items online the easy way.
+              </p>
+            </div>
+            <img
+              alt="Hero"
+              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full md:order-first"
+              height="310"
+              src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              width="550"
             />
-          </a>
-        </div>
-      </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 bg-gray-100">
+          <div className="mb-20 items-center text-center">
+            <h1 className="text-4xl font-bold tracking-tighter md:text-4xl/tight">Our Most Popular Items</h1>
+          </div>
+          <div className="container grid items-center gap-6 px-4 text-center md:px-6 lg:grid-cols-2 lg:gap-10">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">Fresh Fruits</h2>
+              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                Explore our wide variety of fresh fruits including apples, bananas, oranges, and more.
+              </p>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-2 items-center gap-6 lg:gap-12">
+              {/* Apple Card */}
+              <Link href="/products?term=Apple">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://i.imgur.com/BX2FV7m.png"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Apple</h3>
+                    <p className="text-sm text-gray-500">An apple a day...</p>
+                    <h4 className="font-bold">$2.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Banana Card */}
+              <Link href="/products?term=Banana">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=80&w=2980&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Banana</h3>
+                    <p className="text-sm text-gray-500">Great for smoothies!</p>
+                    <h4 className="font-bold">$1.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Orange Card */}
+              <Link href="/products?term=Orange">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1591206369811-4eeb2f03bc95?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Orange</h3>
+                    <p className="text-sm text-gray-500">Juicy and delicious</p>
+                    <h4 className="font-bold">$3.49</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Lemon Card */}
+              <Link href="/products?term=Lemon">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1594304466740-01a51b280fd3?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Lemon</h3>
+                    <p className="text-sm text-gray-500">Sour and Juicy</p>
+                    <h4 className="font-bold">$3.49</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 bg-gray-100">
+          <div className="container grid items-center gap-6 px-4 text-center md:px-6 lg:grid-cols-2 lg:gap-10">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">Fresh Vegetables</h2>
+              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                Explore our wide variety of fresh vegetables including carrots, tomatoes, lettuce, and more.
+              </p>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-2 items-center gap-6 lg:gap-12">
+              {/* Carrots Card */}
+              <Link href="/products?term=Carrots">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1522184216316-3c25379f9760?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Carrots</h3>
+                    <p className="text-sm text-gray-500">Healthy and crunchy</p>
+                    <h4 className="font-bold">$2.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Corn Card */}
+              <Link href="/products?term=Corn">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1551754655-cd27e38d2076?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Corn</h3>
+                    <p className="text-sm text-gray-500">Healthy and delicious</p>
+                    <h4 className="font-bold">$2.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Tomatoes Card */}
+              <Link href="/products?term=Tomatoes">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1606588260160-0c4707ab7db5?q=80&w=2930&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Tomatoes</h3>
+                    <p className="text-sm text-gray-500">Perfect for salads</p>
+                    <h4 className="font-bold">$1.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Lettuce Card */}
+              <Link href="/products?term=Lettuce">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1595739431055-6c308d9f5af3?q=80&w=3024&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Lettuce</h3>
+                    <p className="text-sm text-gray-500">Fresh and crisp</p>
+                    <h4 className="font-bold">$3.49</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 bg-gray-100">
+          <div className="container grid items-center gap-6 px-4 text-center md:px-6 lg:grid-cols-2 lg:gap-10">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">Dairy</h2>
+              <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                Fresh milk, cheese, yogurt, and ice cream of your dreams.
+              </p>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-2 items-center gap-6 lg:gap-12">
+              {/* Milk Card */}
+              <Link href="/products?term=Milk">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1596633605700-1efc9b49e277?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Milk</h3>
+                    <p className="text-sm text-gray-500">Fresh and delicious</p>
+                    <h4 className="font-bold">$2.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Yogurt Card */}
+              <Link href="/products?term=Yogurt">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1564149503905-7fef56abc1f2?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Yogurt</h3>
+                    <p className="text-sm text-gray-500">Tasty and nutritious</p>
+                    <h4 className="font-bold">$2.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Cheese Card */}
+              <Link href="/products?term=Cheese">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                    src="https://images.unsplash.com/photo-1589881210718-42da05899fe4?q=80&w=3164&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    width={400}
+                  />
+                  <CardContent className="p-4">
+                    <h3 className="font-bold">Cheese</h3>
+                    <p className="text-sm text-gray-500">Perfect for sandwiches</p>
+                    <h4 className="font-bold">$1.99</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+              {/* Ice Cream Card */}
+              <Link href="/products?term=Ice Cream">
+                <Card>
+                  <img
+                    alt="Image"
+                    className="aspect-image object-cover w-full h-80"
+                    height={225}
+                  src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  width={400}
+                />
+                <CardContent className="p-4">
+                  <h3 className="font-bold">Ice Cream</h3>
+                  <p className="text-sm text-gray-500">Creamy and delicious</p>
+                  <h4 className="font-bold">$3.49</h4>
+                </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+        </section>
+        
+      </main>
+    </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
     </main>
   );
 }
