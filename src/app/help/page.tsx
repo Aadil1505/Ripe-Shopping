@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 
-export default function Component() {
+export default function Page() {
   return (
     <div className="w-full max-w-6xl mx-auto py-12 md:py-20 px-4 md:px-6">
       <div className="grid md:grid-cols-2 gap-12">

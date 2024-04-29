@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 
-export default function page() {
+export default function Page() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       

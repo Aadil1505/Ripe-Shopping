@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import convertor1 from "@/lib/api/quickpick";
 import useCartStore from '@/lib/hooks/useCartStore';
 
-export default function Component() {
+export default function Page() {
   const [file, setFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
   const [added, setAdded] = useState([]);

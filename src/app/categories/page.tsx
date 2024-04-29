@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Apple, Milk, Beef, Beer, Snowflake } from 'lucide-react';
 import {useRouter} from "next/navigation";
 
-export default function Component() {
+export default function Page() {
 
 
 

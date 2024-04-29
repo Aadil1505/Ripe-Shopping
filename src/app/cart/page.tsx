@@ -14,7 +14,7 @@ import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 
 
 
-export default function page() {
+export default function Page() {
 
   const cart = useCartStore(state => state.cart)
   const setCartQuantity = useCartStore(state => state.setCartQuantity);

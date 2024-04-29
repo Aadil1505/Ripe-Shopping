@@ -1,7 +1,7 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 
-export default function Component({ params }: {params: { productId: string }}) {
+export default function Page({ params }: {params: { productId: string }}) {
   return (
     <>
       <div className="bg-gray-100 dark:bg-gray-950 py-12 md:py-24">

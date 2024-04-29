@@ -7,7 +7,7 @@ import { CircleUser, Menu, Package2, Leaf, Search } from "lucide-react";
 import { CardContent, Card } from "@/components/ui/card"
 
 
-export default async function Home() {
+export default async function Page() {
   
   const { isAuthenticated, getUser } = getKindeServerSession();
   const user = await getUser();

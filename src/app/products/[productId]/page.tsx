@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import useCartStore from '@/lib/hooks/useCartStore';
 
-export default function page({ params }: {params: { productId: string }}) {
+export default function Page({ params }: {params: { productId: string }}) {
   const [results, setResults] = useState([]);
 
 

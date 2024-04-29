@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { Check } from 'lucide-react'
 
-export default function Component({ params }: { params: { orderId: string } }) {
+export default function Page({ params }: { params: { orderId: string } }) {
   const orderId = params.orderId;
   const [total, setTotal] = useState(0);
   const [items, setItems] = useState([]);

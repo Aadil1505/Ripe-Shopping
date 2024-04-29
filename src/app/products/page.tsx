@@ -9,7 +9,7 @@ import Link from 'next/link';
 import useCartStore from '@/lib/hooks/useCartStore';
 
 
-export default function page() {
+export default function Page() {
 
   const cart = useCartStore(state => state.cart)
   const addToCart = useCartStore(state => state.addToCart)
