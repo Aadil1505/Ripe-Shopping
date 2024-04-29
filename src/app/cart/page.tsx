@@ -94,20 +94,6 @@ export default function Page() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div className="flex flex-col h-full">
       <header className="bg-gray-100 dark:bg-gray-800 py-4 px-6">

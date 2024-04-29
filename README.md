@@ -19,10 +19,14 @@
 
 ## Tech Stack
 
+**NEXT JS**
+
 **Client:** React, TailwindCSS
 
-**Server:** Node, Express, MongoDB
+**Server:** Node, MongoDB
 
 **API Integration:** Kroger Open API
+
+**Library Integration:** Tesseract OCR Library
 
 ![Logo](https://i.imgur.com/ERebJqn.gif)
