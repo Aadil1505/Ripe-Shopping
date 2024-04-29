@@ -19,11 +19,11 @@
 
 ## Tech Stack
 
-**NEXT JS**
+**Framework:** Next Js
 
 **Client:** React, TailwindCSS
 
-**Server:** Node, MongoDB
+**Server:** Node Js, MongoDB
 
 **API Integration:** Kroger Open API
 
