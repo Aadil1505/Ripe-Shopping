@@ -40,7 +40,7 @@ export async function GET(request: Request, { params }: { params: { orderId: str
     }
 
     // Find the order object within the user's orders array
-    const orderObject = userDocument.orders.find(order => order.orderId.toString() === orderId);
+    const orderObject = userDocument.orders.find((order: { orderId: { toString: () => string; }; }) => order.orderId.toString() === orderId);
 
     if (!orderObject) {
       return NextResponse.json({ error: "Order not found" });
