@@ -46,7 +46,7 @@ export async function GET(request: Request, { params }: { params: { email: strin
     if (!orders) {
       return NextResponse.json({ error: "Orders not found" });
     }
-    console.log(orders, typeof orders, typeof thing)
+    console.log(orders)
     return NextResponse.json({ orders });
   } catch (error) {
     console.error("Error retrieving order details:", error);
