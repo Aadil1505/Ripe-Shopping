@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import useCartStore from "@/lib/hooks/useCartStore";
 
-export default function cartIcon() {
+export default function CartIcon() {
 
     const totalItems = useCartStore(state => state.totalItems);
 

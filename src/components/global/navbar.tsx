@@ -10,7 +10,7 @@ import Searchbar from "./searchBar"
 import Cart from "./cartIcon"
 
 
-export default async function navbar() {
+export default async function Navbar() {
 
 
 
