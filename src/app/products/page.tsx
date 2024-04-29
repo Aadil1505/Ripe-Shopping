@@ -15,6 +15,7 @@ export default function Page() {
   const addToCart = useCartStore(state => state.addToCart)
   console.log("This is the cart" , cart)
 
+  const [sortOrder, setSortOrder] = useState('ASC'); 
 
 
 
@@ -57,7 +58,13 @@ export default function Page() {
     fetchProducts();
   }, [search]);
 
-
+  useEffect(() => {
+    if (sortOrder === 'ASC') {
+      setResults(results => [...results].sort((a, b) => (a.items[0].price.regular - b.items[0].price.regular)));
+    } else {
+      setResults(results => [...results].sort((a, b) => (b.items[0].price.regular - a.items[0].price.regular)));
+    }
+  }, [sortOrder, results.length]);
 
 
 
@@ -89,6 +96,9 @@ export default function Page() {
             </Label>
           </div>
         </div>
+
+        <Button onClick={() => setSortOrder('ASC')}>Price Low to High</Button>
+        <Button onClick={() => setSortOrder('DESC')}>Price High to Low</Button>
       </div>
 
 
