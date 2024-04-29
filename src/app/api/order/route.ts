@@ -63,7 +63,7 @@
 import dbConnect from "@/lib/mongodb/dbConnect";
 import user from "@/lib/mongodb/models/Users";
 import { NextResponse } from "next/server";
-import { mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 
 // CREATES A NEW ORDER FOR AN EXISTING USER OR CREATES A NEW USER WITH THE NEW ORDER
 export async function POST(request: Request) {
