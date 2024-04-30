@@ -62,7 +62,7 @@ export default function Page({ params }: {params: { productId: string }}) {
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
       <div className="grid md:grid-cols-2 gap-6 items-start">
         <div className="grid gap-4 items-start">
-          <h1 className="text-3xl font-bold">{results.description}</h1>
+          <h1 className="text-3xl font-bold">{results.brand}</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-0.5">
               <StarIcon className="w-5 h-5 fill-primary" />
@@ -71,12 +71,11 @@ export default function Page({ params }: {params: { productId: string }}) {
               <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
               <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
             </div>
-            <div className="text-sm text-muted-foreground">3 Reviews</div>
+            <div className="text-sm text-muted-foreground">3 Stars</div>
           </div>
-          <div className="grid gap-2 text-base sm:text-lg leading-none">
+          <div className="grid gap-2 text-base sm:text-lg leading-none font-semibold">
             <p>
-              Fresh, juicy, and bursting with flavor, our organic strawberries are the perfect addition to your morning
-              smoothie or a delightful snack on a sunny day.
+              {results.description}
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -111,7 +110,7 @@ export default function Page({ params }: {params: { productId: string }}) {
         </div>
       </div>
       <div className="grid gap-4 items-start">
-        <h2 className="text-2xl font-bold">Customer Reviews</h2>
+        <h2 className="text-2xl font-bold">Other Information</h2>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <h3 className="text-lg font-semibold">Great taste</h3>

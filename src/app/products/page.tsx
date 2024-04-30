@@ -60,9 +60,10 @@ export default function Page() {
 
   useEffect(() => {
     if (sortOrder === 'ASC') {
-      setResults(results => [...results].sort((a, b) => (a.items[0].price.regular - b.items[0].price.regular)));
-    } else {
-      setResults(results => [...results].sort((a, b) => (b.items[0].price.regular - a.items[0].price.regular)));
+      setResults(results => [...results].sort((a, b) => (a.items?.[0]?.price?.regular - b.items?.[0]?.price?.regular)));
+    } 
+    else {
+      setResults(results => [...results].sort((a, b) => (b.items?.[0]?.price?.regular - a.items?.[0]?.price?.regular)));
     }
   }, [sortOrder, results.length]);
 

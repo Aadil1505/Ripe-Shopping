@@ -1,0 +1,8 @@
+
+
+
+
+curl -X GET \
+  'https://api.kroger.com/v1/products?filter.term={{SEARCH_TERM}}&filter.locationId=01400722' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer {{ACCESS_TOKEN}}'
