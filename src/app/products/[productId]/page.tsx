@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label"
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
@@ -105,83 +106,33 @@ export default function Page({ params }: {params: { productId: string }}) {
             alt="Product Image"
             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
             height={600}
-            src={results?.images?.[1]?.sizes?.[0]?.url ?? 'default-image-url'}
+            src={
+              (results.images && results.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'
+          }
           />
         </div>
       </div>
       <div className="grid gap-4 items-start">
         <h2 className="text-2xl font-bold">Other Information</h2>
-        <div className="grid gap-4">
+        <div className=" gap-10 flex">
           <div className="grid gap-2">
-            <h3 className="text-lg font-semibold">Great taste</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-              </div>
-              <span className="text-muted-foreground">4/5</span>
-            </div>
-            <p>The strawberries were delicious and sweet. I loved the taste and will definitely buy them again.</p>
+            <h3 className="text-lg font-semibold">Temperature</h3>
+            <p>{results?.temperature?.indicator}</p>
           </div>
           <div className="grid gap-2">
-            <h3 className="text-lg font-semibold">Disappointing</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-              </div>
-              <span className="text-muted-foreground">3/5</span>
-            </div>
-            <p>I found the strawberries to be a bit sour. Wasn't very happy with the quality.</p>
+            <h3 className="text-lg font-semibold">Category</h3>
+            <p>{results?.categories}</p>
           </div>
           <div className="grid gap-2">
-            <h3 className="text-lg font-semibold">Delicious</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-              </div>
-              <span className="text-muted-foreground">3/5</span>
-            </div>
-            <p>The strawberries were delicious and sweet. I loved the taste and will definitely buy them again.</p>
+            <h3 className="text-lg font-semibold">Size</h3>
+            <p>{results?.items?.[0]?.size}</p>
           </div>
           <div className="grid gap-2">
-            <h3 className="text-lg font-semibold">Perfect</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-              </div>
-              <span className="text-muted-foreground">3/5</span>
-            </div>
-            <p>The strawberries were delicious and sweet. I loved the taste and will definitely buy them again.</p>
+            <h3 className="text-lg font-semibold">Product ID / UPC</h3>
+            <p>{results?.productId}</p>
           </div>
-          <div className="grid gap-2">
-            <h3 className="text-lg font-semibold">Great taste</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-0.5">
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-primary" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-                <StarIcon className="w-4 h-4 fill-muted stroke-muted-foreground" />
-              </div>
-              <span className="text-muted-foreground">3/5</span>
-            </div>
-            <p>The strawberries were delicious and sweet. I loved the taste and will definitely buy them again.</p>
-          </div>
+          
+          
         </div>
       </div>
     </div>

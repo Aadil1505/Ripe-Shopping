@@ -1,0 +1,45 @@
+
+[
+  {
+    "_id": "662d7f0966150b15e5ee952f",
+    "name": "Aadil",
+    "email": "testing@gmail.com",
+    "orders": [
+      {
+        "orderId": "662d7f0966150b15e5ee952e",
+        "items": [
+          {
+            "productId": "0008411490329",
+            "quantity": 6,
+            "_id": "662d7f0966150b15e5ee9532"
+          },
+          {
+            "productId": "0001111087902",
+            "quantity": 1,
+            "_id": "662d7f0966150b15e5ee9533"
+          }
+        ],
+        "total": 37.23,
+        "_id": "662d7f0966150b15e5ee9531"
+      },
+      {
+        "orderId": "662d7f7666150b15e5ee953f",
+        "items": [
+          {
+            "productId": "0008411490329",
+            "quantity": 6,
+            "_id": "662d7f7666150b15e5ee9542"
+          },
+          {
+            "productId": "0001111087902",
+            "quantity": 1,
+            "_id": "662d7f7666150b15e5ee9543"
+          }
+        ],
+        "total": 37.23,
+        "_id": "662d7f7666150b15e5ee9541"
+      }
+    ],
+    "__v": 2
+  }
+]
