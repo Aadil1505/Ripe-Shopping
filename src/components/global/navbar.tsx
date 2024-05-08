@@ -56,7 +56,6 @@ export default function Navbar() {
             QuickPick®
           </Link>
           <Link
-            variant="link"
             href="/help"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
