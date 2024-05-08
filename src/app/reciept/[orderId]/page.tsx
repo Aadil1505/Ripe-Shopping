@@ -139,7 +139,7 @@ export default function Page({ params }: { params: { orderId: string } }) {
                             </TableCell>
                             <TableCell className="font-medium">{product.description}</TableCell>
                             <TableCell>{product.quantity}</TableCell>
-                            <TableCell className="text-right">${product.items?.[0]?.price?.regular ?? 'Unavailable'}</TableCell>
+                            <TableCell className="text-right">${product.items?.[0]?.price[0]?.regular ?? 'Unavailable'}</TableCell>
                         </TableRow>
                     </TableBody>
                 ))}
