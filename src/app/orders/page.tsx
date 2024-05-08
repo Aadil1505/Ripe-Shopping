@@ -6,7 +6,19 @@ import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 import {useRouter} from "next/navigation";
 
 export default function Page() {
-  const [orders, setOrders] = useState([]);
+
+  interface Order {
+    orderId: string;
+    total: number;
+  }
+  
+  interface OrderResponse {
+    orders: Order[];
+  }
+  
+
+  const [orders, setOrders] = useState<Order[]>([]);
+
   const {user} = useKindeBrowserClient();
 
   const router = useRouter();
@@ -15,34 +27,38 @@ export default function Page() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if(email != null){
-
+      if (email) {
         try {
           const response = await fetch(`/api/orders/${email}`, {
             headers: {
               'Content-Type': 'application/json',
-              'method': 'GET',
+              'Accept': 'application/json'  // Ensure 'Accept' is used instead of method in headers for correctness.
             },
+            method: 'GET',  // Method should be outside headers
           });
-          const data = await response.json();
-          console.log(data.orders)
+          if (!response.ok) {
+            throw new Error('Failed to fetch orders');
+          }
+          const data: OrderResponse = await response.json();
           setOrders(data.orders);
         } catch (err) {
           console.error("There was an error fetching the orders", err);
-        } 
+        }
       }
     };
-
+  
     fetchOrders();
   }, [email]);
+  
 
   console.log(orders)
 
 
 
-  const testfunc = async (orderId) => {
-    router.push(`/reciept/${orderId}`);
-  }
+  const testfunc = async (orderId: string) => {
+    router.push(`/reciept/${orderId}`);  
+  };
+  
 
 
 

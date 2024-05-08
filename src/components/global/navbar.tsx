@@ -1,5 +1,5 @@
+"use client"
 import { LoginLink, LogoutLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { CircleUser, Menu, ShoppingBag, Leaf, Search, Check } from "lucide-react";
 import Link from "next/link";
 import Image from 'next/image';
@@ -8,15 +8,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Searchbar from "./searchBar"
 import Cart from "./cartIcon"
+import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 
 
-export default async function Navbar() {
+export default function Navbar() {
 
 
 
 
-  const { isAuthenticated, getUser } = getKindeServerSession();
-  const user = await getUser();
+
+  const {user} = useKindeBrowserClient();
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-10">
@@ -135,7 +136,7 @@ export default async function Navbar() {
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="relative rounded-full">
                 <CircleUser className="h-5 w-5" />
-                {(await isAuthenticated()) && (
+                {(user) && (
                   <span className="absolute -top-1 -right-2 flex h-6 w-6 items-center justify-center text-xs text-black">
                     <Check />
                   </span>
@@ -146,7 +147,7 @@ export default async function Navbar() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Hi {user?.given_name}!</DropdownMenuLabel>
               <DropdownMenuSeparator />
-                {!(await isAuthenticated()) ? (
+                {!(user) ? (
                   <> 
                       {/* NOT AUTHENTICATED */}
                       <DropdownMenuItem>

@@ -16,30 +16,60 @@ import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 
 export default function Page() {
 
-  const cart = useCartStore(state => state.cart)
-  const setCartQuantity = useCartStore(state => state.setCartQuantity);
-  const removeFromCart = useCartStore(state => state.removeFromCart)
-  const clearCart = useCartStore(state => state.clearCart)
-  const cartTotal = useCartStore((state) => state.cartTotal);
-  const totalItems = useCartStore((state) => state.totalItems);
-  const handleRemoveFromCart = (productId) => {
-    removeFromCart(productId)
+  interface CartItem {
+    productId: string;
+    description: string;
+    brand: string;
+    quantity: number;
+    images: { perspective: string; sizes: { size: string; url: string }[] }[];
+    items: { price: { regular: number } }[];
   }
-  const updateQuantity = (productId, quantity) => {
-    setCartQuantity({ productId, quantity });
-  };
-  console.log("cart from cart", cart)
-  const productIds = cart.map(({ productId }) => productId);
+  
+  interface CartState {
+    cart: CartItem[];
+    cartTotal: number;
+    totalItems: number;
+    addToCart: (item: CartItem, quantity: number) => void;
+    setCartQuantity: (productId: string, quantity: number) => void;
+    removeFromCart: (productId: string) => void;
+    clearCart: () => void;
+  }
+  
 
-  const items = cart.map(product => ({
+  const { cart, cartTotal, totalItems, removeFromCart, setCartQuantity, clearCart } = useCartStore((state: CartState) => ({
+    cart: state.cart,
+    cartTotal: state.cartTotal,
+    totalItems: state.totalItems,
+    removeFromCart: state.removeFromCart,
+    setCartQuantity: state.setCartQuantity,
+    clearCart: state.clearCart
+  }));
+  
+  
+  
+  
+  const handleRemoveFromCart = (productId: string) => {
+    removeFromCart(productId);
+  };
+  
+  const updateQuantity = (productId: string, quantity: string) => {
+    const qty = parseInt(quantity, 10);
+    if (!isNaN(qty)) {
+      setCartQuantity(productId, qty);
+    }
+  };
+  
+
+  console.log("cart from cart", cart)
+
+
+  const items = cart.map((product: { productId: any; quantity: any }) => ({
     productId: product.productId,
     quantity: product.quantity
   }));
   const taxed = (cartTotal * .08625).toFixed(2)
   const taxedTotal = ((cartTotal * .08625) + cartTotal).toFixed(2)
 
-
-  const router = useRouter();
 
 
 
@@ -56,12 +86,9 @@ export default function Page() {
 
 
 
-
-
+  const router = useRouter();
   // POST ORDER DETAILS TO API FOR DATABASE AND SEND TO CONFIRM PAGE
   const performConfirm = async () => {
-
-
     try {
       const res = await fetch(`/api/order`, {
         method: 'POST',
@@ -101,7 +128,7 @@ export default function Page() {
       </header>
       <div className="flex-1 overflow-auto p-6 space-y-6">
         <div className="grid gap-6">
-        {cart.map((product, index) => (
+        {cart.map((product: CartItem, index: number) => (
           <div key={index} className="grid grid-cols-[80px_1fr_80px_80px_80px] items-center gap-4">
 
             <Link  href={`/products/${product.productId}`}>
@@ -109,7 +136,7 @@ export default function Page() {
                 alt={product.description}
                 className="rounded-md"
                 height={80}
-                src={product.images.find(image => image.perspective === 'front').sizes.find(size => size.size === 'xlarge').url}
+                src={product.images.find((image: { perspective: string }) => image.perspective === 'front')?.sizes.find((size: { size: string }) => size.size === 'xlarge')?.url || 'default-image-url'}
                 style={{
                   aspectRatio: "80/80",
                   objectFit: "cover",

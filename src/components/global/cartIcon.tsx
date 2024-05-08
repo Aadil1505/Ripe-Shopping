@@ -5,7 +5,7 @@ import useCartStore from "@/lib/hooks/useCartStore";
 
 export default function CartIcon() {
 
-    const totalItems = useCartStore(state => state.totalItems);
+    const totalItems = useCartStore((state: { totalItems: any; }) => state.totalItems);
 
     return (
       <Button variant="secondary" size="icon" className="relative rounded-full">
