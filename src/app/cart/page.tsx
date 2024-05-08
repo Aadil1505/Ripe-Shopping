@@ -36,14 +36,17 @@ export default function Page() {
   }
   
 
-  const { cart, cartTotal, totalItems, removeFromCart, setCartQuantity, clearCart } = useCartStore((state: CartState) => ({
-    cart: state.cart,
-    cartTotal: state.cartTotal,
-    totalItems: state.totalItems,
-    removeFromCart: state.removeFromCart,
-    setCartQuantity: state.setCartQuantity,
-    clearCart: state.clearCart
-  }));
+
+
+
+  const cart = useCartStore((state: { cart: any; }) => state.cart);
+ 
+  const setCartQuantity = useCartStore((state: { setCartQuantity: any }) => state.setCartQuantity);
+  const removeFromCart = useCartStore((state: { removeFromCart: any }) => state.removeFromCart)
+  const clearCart = useCartStore((state: { clearCart: any }) => state.clearCart)
+  const cartTotal = useCartStore((state: { cartTotal: any }) => state.cartTotal);
+  const totalItems = useCartStore((state: { totalItems: any }) => state.totalItems);
+  
   
   
   
