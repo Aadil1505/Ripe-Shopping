@@ -1,72 +1,68 @@
-'use client'
-import { useSearchParams } from 'next/navigation'
+"use client"
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation'; // Check this import based on your Next.js version
+import Link from 'next/link';
+import Image from 'next/image';
+import { Upload, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { CardContent, Card } from "@/components/ui/card"
-import Link from 'next/link';
+import { Card, CardContent } from "@/components/ui/card"
 import useCartStore from '@/lib/hooks/useCartStore';
-import Image from 'next/image';
 
+interface Product {
+  productId: string;
+  description: string;
+  images: Array<{
+    perspective: string;
+    sizes: Array<{
+      size: string;
+      url: string;
+    }>
+  }>;
+  items: Array<{
+    price: {
+      regular: number;
+    }
+  }>;
+  categories: string[];
+}
 
 export default function Page() {
+  const cart = useCartStore((state: { cart: any; }) => state.cart);
+  const addToCart = useCartStore((state: { addToCart: any; }) => state.addToCart);
 
-  const cart = useCartStore(state => state.cart)
-  const addToCart = useCartStore(state => state.addToCart)
-  console.log("This is the cart" , cart)
+  const searchParams = useSearchParams(); 
+  const search = searchParams.get('term') || '';
 
-  const [sortOrder, setSortOrder] = useState('ASC'); 
-
-
-
-
-
-  const handleAddToCart = (use: any) => {
-    console.log(use)
-    addToCart( { product:use, quantity:1 } )
-  }
-
-
-
-
-  const searchParams = useSearchParams()
-  const search = searchParams.get('term')
-  console.log("The search is for: " + search)
-
-  const [results, setResults] = useState([]);
-
-
-
+  const [results, setResults] = useState<Product[]>([]);
+  const [sortOrder, setSortOrder] = useState('ASC');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`/api/products?term=${search}`, {
-          headers: {
-            'Accept': 'application/json',
-            'method': 'GET',
-          },
-        });
-        const data = await res.json();
-        console.log(data);
-        setResults(data)
+        const res = await fetch(`/api/products?term=${search}`);
+        const data: Product[] = await res.json();
+        setResults(data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
-    }
+    };
 
     fetchProducts();
   }, [search]);
 
   useEffect(() => {
-    if (sortOrder === 'ASC') {
-      setResults(results => [...results].sort((a, b) => (a.items?.[0]?.price?.regular - b.items?.[0]?.price?.regular)));
-    } 
-    else {
-      setResults(results => [...results].sort((a, b) => (b.items?.[0]?.price?.regular - a.items?.[0]?.price?.regular)));
-    }
-  }, [sortOrder, results.length]);
+    const sortResults = sortOrder === 'ASC'
+      ? (a: Product, b: Product) => a.items[0].price.regular - b.items[0].price.regular
+      : (a: Product, b: Product) => b.items[0].price.regular - a.items[0].price.regular;
+
+    setResults((currentResults) => [...currentResults].sort(sortResults));
+  }, [sortOrder]);
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({ product, quantity: 1 });
+  };
 
 
 
@@ -115,7 +111,7 @@ export default function Page() {
                   <Link  href={`/products/${product.productId}`}>
                   <div className="aspect-card">
                       <img
-                      alt={product.description} // Assuming the item has a name field
+                      alt={product.description} 
                       className="aspect-object object-cover rounded-t-lg"
                       src={(product.images && product.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'}
                       />
@@ -136,12 +132,12 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline">
-                <ChevronLeftIcon className="w-3 h-3 -translate-x-1" />
+                <ChevronLeft className="w-3 h-3 -translate-x-1" />
                 Prev
                 </Button>
                 <Button size="sm" variant="outline">
                 Next
-                <ChevronRightIcon className="w-3 h-3 -translate-x-1" />
+                <ChevronRight className="w-3 h-3 -translate-x-1" />
                 </Button>
           </div>
         </div>

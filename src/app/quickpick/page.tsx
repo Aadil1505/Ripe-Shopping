@@ -8,24 +8,27 @@ import convertor1 from "@/lib/api/quickpick";
 import useCartStore from '@/lib/hooks/useCartStore';
 
 export default function Page() {
-  const [file, setFile] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
-  const [added, setAdded] = useState([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>('');
+  const [added, setAdded] = useState<any[]>([]);
   const [showAddedItems, setShowAddedItems] = useState(false);
-  const addToCart = useCartStore(state => state.addToCart)
-  
+  const addToCart = useCartStore((state: { addToCart: any; }) => state.addToCart);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreviewUrl(reader.result);
+        if (typeof reader.result === 'string') {
+          setImagePreviewUrl(reader.result);
+        }
       };
       reader.readAsDataURL(file);
     }
   };
+  
 
 
   const fetchProducts = async (term: string) => {
@@ -45,7 +48,7 @@ export default function Page() {
   }
 
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     setShowAddedItems(true);
     if (!file) {
@@ -63,21 +66,21 @@ export default function Page() {
       console.log(items)
 
       // Conducts a product search based on the terms taken out from the image
-      const productPromises = items.map(item => fetchProducts(item));
+      const productPromises = items.map((item: string) => fetchProducts(item));
 
       // Saves the search results as an object for each individual search
       const productResults = await Promise.all(productPromises);
 
       // Gets only the first product result from each product search
-      const products = productResults.map(result => result[0]); 
+      const products = productResults.map((result: any[]) => result[0]); 
 
       // Loops through the list of products and adds them to the cart
-      products.forEach(product => addToCart( { product:product, quantity:1 } ));
+      products.forEach((product: any) => addToCart( { product:product, quantity:1 } ));
 
       setAdded(products);
     } 
     catch (error) {
-      alert(error.message);
+      console.log(error);
     }
   };
 

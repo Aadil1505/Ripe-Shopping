@@ -1,63 +1,76 @@
-'use client'
+"use client"
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { Label } from "@/components/ui/label"
-import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Star } from "lucide-react";
+import { useEffect, useState, ChangeEvent } from 'react';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import useCartStore from '@/lib/hooks/useCartStore';
 
-export default function Page({ params }: {params: { productId: string }}) {
-  const [results, setResults] = useState([]);
-
-
-
-  const cart = useCartStore(state => state.cart)
-  const addToCart = useCartStore(state => state.addToCart)
-  console.log("This is the cart" , cart)
-
-  const[quantity, setQuantity] = useState(1)
-  console.log(quantity)
-
-
-
-
-  const handleAddToCart = (event: any, use: any) => {
-    event.preventDefault(); 
-    console.log(use);
-    addToCart({ product: use, quantity: parseInt(quantity, 10) });
+interface Product {
+  brand?: string;
+  description?: string;
+  items: {
+    price: {
+      regular: number;
+    },
+    size?: string;
+  }[];
+  images: {
+    perspective: string;
+    sizes: {
+      size: string;
+      url: string;
+    }[];
+  }[];
+  categories?: string[];
+  temperature?: {
+    indicator?: string;
+  };
+  productId?: string;
 }
 
+export default function Page({ params }: { params: { productId: string } }) {
+  const [results, setResults] = useState<Product | null>(null);
 
+  const cart = useCartStore((state: { cart: any; }) => state.cart);
+  const addToCart = useCartStore((state: { addToCart: any; }) => state.addToCart);
 
-
-
-
-
-
-
-
+  const [quantity, setQuantity] = useState<number>(1);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`/api/products/${params.productId}`, {
+        const response = await fetch(`/api/products/${params.productId}`, {
           headers: {
             'Accept': 'application/json',
-            'method': 'GET',
-          },
+            'Content-Type': 'application/json'
+          }
         });
-        const data = await res.json();
-        console.log(data);
-        setResults(data)
+        const data: Product = await response.json();
+        setResults(data);
       } catch (err) {
-        console.log(err);
+        console.error("Failed to fetch product:", err);
       }
-    }
+    };
 
     fetchProducts();
   }, [params.productId]);
 
+  const handleAddToCart = (event: React.MouseEvent<HTMLButtonElement>, product: Product) => {
+    event.preventDefault();
+    if (product) {
+      addToCart({ product, quantity });
+    }
+  };
+
+  const handleChangeQuantity = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuantity(parseInt(event.target.value, 10));
+  };
+
+  if (!results) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
@@ -66,11 +79,11 @@ export default function Page({ params }: {params: { productId: string }}) {
           <h1 className="text-3xl font-bold">{results.brand}</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-0.5">
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-primary" />
-              <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-              <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
+              <Star className="w-5 h-5 fill-primary" />
+              <Star className="w-5 h-5 fill-primary" />
+              <Star className="w-5 h-5 fill-primary" />
+              <Star className="w-5 h-5 fill-muted stroke-muted-foreground" />
+              <Star className="w-5 h-5 fill-muted stroke-muted-foreground" />
             </div>
             <div className="text-sm text-muted-foreground">3 Stars</div>
           </div>
@@ -93,8 +106,8 @@ export default function Page({ params }: {params: { productId: string }}) {
                 type="number" 
                 id="Quantity" 
                 placeholder="Qty" 
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                value={quantity.toString()}
+                onChange={handleChangeQuantity}
               />
             </div>
             <Button size="lg" onClick={(e) => handleAddToCart(e, results)}>Add to cart</Button>
@@ -139,21 +152,4 @@ export default function Page({ params }: {params: { productId: string }}) {
   )
 }
 
-function StarIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  )
-}
+

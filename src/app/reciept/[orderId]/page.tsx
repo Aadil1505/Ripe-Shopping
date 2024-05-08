@@ -1,87 +1,95 @@
 "use client"
+import { useEffect, useState } from "react";
+import { Check } from 'lucide-react';
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
-import { Check } from 'lucide-react'
 
 export default function Page({ params }: { params: { orderId: string } }) {
-  const orderId = params.orderId;
-  const [total, setTotal] = useState(0);
-  const [items, setItems] = useState([]);
-  const [results, setResults] = useState([]);
 
-  const subtotal = total
-  const taxed = subtotal * .08625
-  const finaltotal = total + (subtotal * .08625)
-
-
-
-  const fetchProductsDetails = async (productIds) => {
-    try {
-      const products = await Promise.all(productIds.map(async (productId) => {
-          const response = await fetch(`/api/products/${productId}`, {
-            headers: {
-              'Accept': 'application/json',
-              'method': 'GET',
-            },
-          });
-          return response.json();
-        })
-      );
-      console.log(products);
-      return products
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  interface Product {
+    productId: string;
+    description: string;
+    quantity?: number;
+    items: {
+      price: {
+        regular: number;
+      }[];
+    }[];
+    images: {
+      perspective: string;
+      sizes: {
+        size: string;
+        url: string;
+      }[];
+    }[];
+  }
+  
+  interface OrderData {
+    total: number;
+    items: {
+      productId: string;
+      quantity: number;
+    }[];
+  }
   
 
+  const orderId = params.orderId;
+  const [total, setTotal] = useState<number>(0);
+  const [results, setResults] = useState<Product[]>([]); // Now typed as an array of Product
 
+  const subtotal = total;
+  const taxed = subtotal * 0.08625;
+  const finaltotal = subtotal + taxed;
 
-
-
-
-useEffect(() => {
-    const fetchOrderAndProducts = async () => {
-      try {
-        const orderRes = await fetch(`/api/reciept/${params.orderId}`, {
+  const fetchProductsDetails = async (productIds: string[]) => {
+    try {
+      const productDetails = await Promise.all(productIds.map(async (productId) => {
+        const response = await fetch(`/api/products/${productId}`, {
           headers: {
             'Accept': 'application/json',
-            'method': 'GET',
+            'Content-Type': 'application/json' // Corrected header
           },
+          method: 'GET', // Moved method outside headers
         });
-        const orderData = await orderRes.json();
+        const product: Product = await response.json();
+        return product;
+      }));
+      return productDetails;
+    } catch (err) {
+      console.error(err);
+      return []; // Return an empty array on error to maintain type consistency
+    }
+  };
+
+  useEffect(() => {
+    const fetchOrderAndProducts = async () => {
+      try {
+        const orderRes = await fetch(`/api/reciept/${orderId}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'GET',
+        });
+        const orderData: OrderData = await orderRes.json();
         setTotal(orderData.total);
-  
+
         const productIds = orderData.items.map(item => item.productId);
         const productDetails = await fetchProductsDetails(productIds);
-  
-        // Now we have both the product details and the quantities,
-        // let's merge them together.
+
         const detailedItems = productDetails.map(product => ({
           ...product,
           quantity: orderData.items.find(item => item.productId === product.productId)?.quantity || 0,
         }));
-  
+
         setResults(detailedItems);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
-  
+
     fetchOrderAndProducts();
-  }, [params.orderId]);
-  
-  // The fetchProductsDetails function remains the same
-  
-
-
-
-
-    console.log(results)
-
-
-
+  }, [orderId]);
 
 
   return (
