@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { CardContent, Card } from "@/components/ui/card"
 import Link from 'next/link';
 import useCartStore from '@/lib/hooks/useCartStore';
+import Image from 'next/image';
 
 
 export default function Page() {
@@ -116,7 +117,7 @@ export default function Page() {
                       <img
                       alt={product.description} // Assuming the item has a name field
                       className="aspect-object object-cover rounded-t-lg"
-                      src={product.images.find(image => image.perspective === 'front').sizes.find(size => size.size === 'xlarge')?.url} // Assuming the item has an imageUrl field
+                      src={(product.images && product.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'}
                       />
                   </div>
                   </Link>

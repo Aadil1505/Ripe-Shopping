@@ -123,7 +123,9 @@ useEffect(() => {
                                 alt={product.description}
                                 className="aspect-square rounded-md object-cover"
                                 height={64}
-                                src={product.images.find(image => image.perspective === 'front').sizes.find(size => size.size === 'xlarge').url}
+                                src={
+                                  (product.images && product.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'
+                              }
                                 width={64}
                             />
                             </TableCell>

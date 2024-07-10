@@ -148,10 +148,6 @@ export default function Page() {
           <p className="font-medium">${cartTotal.toFixed(2)}</p>
         </div>
         <div className="grid grid-cols-[1fr_auto] items-center gap-4">
-          <p>Shipping</p>
-          <p className="font-medium">$10.00</p>
-        </div>
-        <div className="grid grid-cols-[1fr_auto] items-center gap-4">
           <p>Taxes (NY)</p>
           <p className="font-medium">${taxed}</p>
         </div>
@@ -214,16 +210,6 @@ export default function Page() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
-
-
-
-
-
-
-
-
-
           </div>
         </div>
       </div>
