@@ -1,98 +1,54 @@
 "use client"
+
 import { DialogTrigger, DialogTitle, DialogDescription, DialogHeader, DialogFooter, DialogContent, Dialog } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import useCartStore from "@/lib/hooks/useCartStore"
+import useCartStore, { CartState, CartItem } from "@/lib/hooks/useCartStore"  // Import CartItem from useCartStore
 import { Trash2, CreditCard, Calendar, Lock, User } from 'lucide-react'
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
-import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
-
-
-
-
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 export default function Page() {
+  const { cart, setCartQuantity, removeFromCart, clearCart, cartTotal, totalItems } = useCartStore();
 
-  const cart = useCartStore(state => state.cart)
-  const setCartQuantity = useCartStore(state => state.setCartQuantity);
-  const removeFromCart = useCartStore(state => state.removeFromCart)
-  const clearCart = useCartStore(state => state.clearCart)
-  const cartTotal = useCartStore((state) => state.cartTotal);
-  const totalItems = useCartStore((state) => state.totalItems);
-  const handleRemoveFromCart = (productId) => {
-    removeFromCart(productId)
-  }
-  const updateQuantity = (productId, quantity) => {
-    setCartQuantity({ productId, quantity });
+  const handleRemoveFromCart = (productId: string) => {
+    removeFromCart(productId);
   };
-  console.log("cart from cart", cart)
-  const productIds = cart.map(({ productId }) => productId);
 
-  const items = cart.map(product => ({
-    productId: product.productId,
-    quantity: product.quantity
-  }));
-  const taxed = (cartTotal * .08625).toFixed(2)
-  const taxedTotal = ((cartTotal * .08625) + cartTotal).toFixed(2)
+  const updateQuantity = (productId: string, quantity: string) => {
+    setCartQuantity({ productId, quantity: parseInt(quantity, 10) });
+  };
 
+  const taxRate = 0.08625;
+  const taxAmount = (cartTotal * taxRate).toFixed(2);
+  const taxedTotal = (cartTotal * (1 + taxRate)).toFixed(2);
 
   const router = useRouter();
-
-
-
   const { user } = useKindeBrowserClient();
-  const name = user?.given_name
-  const email = user?.email
 
-
-
-  console.log(name, email, items)
-
-
-
-
-
-
-
-
-  // POST ORDER DETAILS TO API FOR DATABASE AND SEND TO CONFIRM PAGE
   const performConfirm = async () => {
-
-
     try {
+      const items = cart.map(({ productId, quantity }) => ({ productId, quantity }));
       const res = await fetch(`/api/order`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, items, total: taxedTotal }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: user?.given_name, 
+          email: user?.email, 
+          items, 
+          total: taxedTotal 
+        }),
       });
-      const data = await res.json();
-      console.log(data.orderId);
-      clearCart()
-      router.push(`/reciept/${data.orderId}`);
-      
+      const { orderId } = await res.json();
+      clearCart();
+      router.push(`/reciept/${orderId}`);
     } catch (err) {
-      console.log(err);
+      console.error("Error during checkout:", err);
     }
-
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className="flex flex-col h-full">
@@ -101,45 +57,46 @@ export default function Page() {
       </header>
       <div className="flex-1 overflow-auto p-6 space-y-6">
         <div className="grid gap-6">
-        {cart.map((product, index) => (
-          <div key={index} className="grid grid-cols-[80px_1fr_80px_80px_80px] items-center gap-4">
-
-            <Link  href={`/products/${product.productId}`}>
-              <img
-                alt={product.description}
-                className="rounded-md"
-                height={80}
-                src={product.images.find(image => image.perspective === 'front').sizes.find(size => size.size === 'xlarge').url}
-                style={{
-                  aspectRatio: "80/80",
-                  objectFit: "cover",
-                }}
-                width={80}
-              />
-            </Link>
-
-            <Link  href={`/products/${product.productId}`}>
-              <div>
-                <h3 className="font-medium">{product.brand}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
-                  {product.description}
-                </p>
+          {cart.map((product) => (
+            <div key={product.productId} className="grid grid-cols-[80px_1fr_80px_80px_80px] items-center gap-4">
+              <Link href={`/products/${product.productId}`}>
+                <img
+                  alt={product.description || "Product image"}
+                  className="rounded-md"
+                  height={80}
+                  src={product.items[0]?.image?.url || "/placeholder-image.jpg"}
+                  style={{
+                    aspectRatio: "80/80",
+                    objectFit: "cover",
+                  }}
+                  width={80}
+                />
+              </Link>
+              <Link href={`/products/${product.productId}`}>
+                <div>
+                  <h3 className="font-medium">{product.description || "Unknown Product"}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    {product.description || "No description available"}
+                  </p>
+                </div>
+              </Link>
+              <div className="text-right">
+                <p className="font-medium">${product.items[0]?.price?.regular.toFixed(2) ?? 'Unavailable'}</p>
               </div>
-            </Link>
-            <div className="text-right">
-              <p className="font-medium">${product.items?.[0]?.price?.regular ?? 'Unavailable'}</p>
+              <div className="text-center">
+                <Input
+                  type="number"
+                  min="1"
+                  value={product.quantity}
+                  className="w-full"
+                  onChange={(e) => updateQuantity(product.productId, e.target.value)}
+                />
+              </div>
+              <div className="text-right">
+                <Button size="lg" onClick={() => handleRemoveFromCart(product.productId)}><Trash2 /></Button>
+              </div>
             </div>
-            <div className="text-center">
-              <Input type="number" min="1" value={product.quantity} className="w-full" onChange={(e) => updateQuantity(product.productId, e.target.value)} />
-            </div>
-            <div className="text-right">
-              <Button size="lg" onClick={() => {handleRemoveFromCart(product.productId)}}><Trash2 /></Button>
-            </div>
-          </div>
-        ))}
-
-
-
+          ))}
         </div>
       </div>
       <div className="bg-gray-100 dark:bg-gray-800 p-6 space-y-4">
@@ -149,7 +106,7 @@ export default function Page() {
         </div>
         <div className="grid grid-cols-[1fr_auto] items-center gap-4">
           <p>Taxes (NY)</p>
-          <p className="font-medium">${taxed}</p>
+          <p className="font-medium">${taxAmount}</p>
         </div>
         <Separator />
         <div className="grid grid-cols-[1fr_auto] items-center gap-4">
@@ -159,12 +116,10 @@ export default function Page() {
         <div className="grid grid-cols-[1fr_auto] items-center gap-4">
           <div className="flex gap-x-4">
             <Input className="w-1/2" placeholder="Promo code" type="text" />
-            <Button size="lg" className="w-1/4" onClick={() => {clearCart()}}>Empty Cart</Button>
-
-            {/* CREDIT CARD INFO FOR CHECKOUT */}
+            <Button size="lg" className="w-1/4" onClick={() => clearCart()}>Empty Cart</Button>
             <Dialog>
               <DialogTrigger asChild>
-              <Button size="lg" className="w-1/4">Checkout</Button>
+                <Button size="lg" className="w-1/4">Checkout</Button>
               </DialogTrigger>
               <DialogContent className="w-full max-w-md">
                 <DialogHeader>
@@ -206,7 +161,7 @@ export default function Page() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button className="ml-auto" onClick={() => performConfirm()}>Submit</Button>
+                  <Button className="ml-auto" onClick={performConfirm}>Submit</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -214,5 +169,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  )
+  );
 }
