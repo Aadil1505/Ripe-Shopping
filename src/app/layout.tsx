@@ -11,6 +11,15 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Ripe Shopping",
   description: "Ripe's Grocery Shopping Web App",
+  openGraph: {
+		title: "Ripe Shopping",
+		description:
+			"Ripe's Grocery Shopping Web App",
+		url: "https://ripe-shopping.vercel.app/",
+    images: [{
+      url: "https://i.imgur.com/xY26Ter.png",
+    }],
+	},
 };
 
 export default async function RootLayout({
@@ -18,10 +27,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
-  const { isAuthenticated, getUser } = getKindeServerSession();
-  const user = await getUser();
 
   return (
     <html lang="en">
