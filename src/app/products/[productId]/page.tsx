@@ -5,38 +5,54 @@ import { Label } from "@/components/ui/label"
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import useCartStore from '@/lib/hooks/useCartStore';
+import useCartStore, { CartItem } from '@/lib/hooks/useCartStore';
 
-export default function Page({ params }: {params: { productId: string }}) {
-  const [results, setResults] = useState([]);
+// Define a Product interface based on the structure you're using
+interface Product {
+  productId: string;
+  brand: string;
+  description: string;
+  items: Array<{
+    price: {
+      regular: number;
+    };
+    size?: string;
+  }>;
+  images?: Array<{
+    perspective: string;
+    sizes: Array<{
+      size: string;
+      url: string;
+    }>;
+  }>;
+  temperature?: {
+    indicator: string;
+  };
+  categories?: string[];
+}
 
-
+export default function Page({ params }: { params: { productId: string } }) {
+  const [results, setResults] = useState<Product | null>(null);
 
   const cart = useCartStore(state => state.cart)
   const addToCart = useCartStore(state => state.addToCart)
-  console.log("This is the cart" , cart)
 
-  const[quantity, setQuantity] = useState(1)
-  console.log(quantity)
+  const [quantity, setQuantity] = useState<number>(1)
 
-
-
-
-  const handleAddToCart = (event: any, use: any) => {
-    event.preventDefault(); 
-    console.log(use);
-    addToCart({ product: use, quantity: parseInt(quantity, 10) });
-}
-
-
-
-
-
-
-
-
-
-
+  const handleAddToCart = (event: React.MouseEvent<HTMLButtonElement>, product: Product) => {
+    event.preventDefault();
+    console.log(product);
+    const cartItem: CartItem = {
+      productId: product.productId,
+      quantity: quantity,
+      description: product.description,
+      items: product.items.map(item => ({
+        price: { regular: item.price.regular },
+        image: product.images?.[0]?.sizes.find(size => size.size === 'xlarge')
+      }))
+    };
+    addToCart({ product: cartItem, quantity });
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -47,7 +63,7 @@ export default function Page({ params }: {params: { productId: string }}) {
             'method': 'GET',
           },
         });
-        const data = await res.json();
+        const data: Product = await res.json();
         console.log(data);
         setResults(data)
       } catch (err) {
@@ -58,6 +74,9 @@ export default function Page({ params }: {params: { productId: string }}) {
     fetchProducts();
   }, [params.productId]);
 
+  if (!results) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
@@ -75,12 +94,10 @@ export default function Page({ params }: {params: { productId: string }}) {
             <div className="text-sm text-muted-foreground">3 Stars</div>
           </div>
           <div className="grid gap-2 text-base sm:text-lg leading-none font-semibold">
-            <p>
-              {results.description}
-            </p>
+            <p>{results.description}</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-4xl font-bold">${results.items?.[0]?.price?.regular}</div>
+            <div className="text-4xl font-bold">${results.items[0]?.price?.regular.toFixed(2)}</div>
           </div>
           <form className="grid gap-4 md:gap-8">
             <div className="grid gap-2">
@@ -94,12 +111,11 @@ export default function Page({ params }: {params: { productId: string }}) {
                 id="Quantity" 
                 placeholder="Qty" 
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
               />
             </div>
             <Button size="lg" onClick={(e) => handleAddToCart(e, results)}>Add to cart</Button>
           </form>
-
         </div>
         <div className="grid gap-4 md:gap-8 items-start">
           <img
@@ -107,8 +123,8 @@ export default function Page({ params }: {params: { productId: string }}) {
             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
             height={600}
             src={
-              (results.images && results.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'
-          }
+              results.images?.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge')?.url || 'default-image-url'
+            }
           />
         </div>
       </div>
@@ -117,29 +133,27 @@ export default function Page({ params }: {params: { productId: string }}) {
         <div className=" gap-10 flex">
           <div className="grid gap-2">
             <h3 className="text-lg font-semibold">Temperature</h3>
-            <p>{results?.temperature?.indicator}</p>
+            <p>{results.temperature?.indicator}</p>
           </div>
           <div className="grid gap-2">
             <h3 className="text-lg font-semibold">Category</h3>
-            <p>{results?.categories}</p>
+            <p>{results.categories?.join(', ')}</p>
           </div>
           <div className="grid gap-2">
             <h3 className="text-lg font-semibold">Size</h3>
-            <p>{results?.items?.[0]?.size}</p>
+            <p>{results.items[0]?.size}</p>
           </div>
           <div className="grid gap-2">
             <h3 className="text-lg font-semibold">Product ID / UPC</h3>
-            <p>{results?.productId}</p>
+            <p>{results.productId}</p>
           </div>
-          
-          
         </div>
       </div>
     </div>
   )
 }
 
-function StarIcon(props) {
+function StarIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

@@ -5,8 +5,15 @@ import Link from "next/link"
 import {useKindeBrowserClient} from "@kinde-oss/kinde-auth-nextjs";
 import {useRouter} from "next/navigation";
 
+// Define an interface for the order structure
+interface Order {
+  orderId: string;
+  total: number;
+  // Add other properties as needed
+}
+
 export default function Page() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const {user} = useKindeBrowserClient();
 
   const router = useRouter();
@@ -25,7 +32,6 @@ export default function Page() {
             },
           });
           const data = await response.json();
-          console.log(data.orders)
           setOrders(data.orders);
         } catch (err) {
           console.error("There was an error fetching the orders", err);
@@ -40,7 +46,7 @@ export default function Page() {
 
 
 
-  const testfunc = async (orderId) => {
+  const testfunc = (orderId: string) => {
     router.push(`/reciept/${orderId}`);
   }
 
@@ -75,7 +81,7 @@ export default function Page() {
                         <TableCell className="font-medium" onClick={() => testfunc(order.orderId)}>{order.orderId}</TableCell>
                         <TableCell>Paid</TableCell>
                         <TableCell>Credit Card</TableCell>
-                        <TableCell className="text-right">{order.total.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
                     </TableRow>
                     ))}
                 </TableBody>

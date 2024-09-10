@@ -6,38 +6,53 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { CardContent, Card } from "@/components/ui/card"
 import Link from 'next/link';
-import useCartStore from '@/lib/hooks/useCartStore';
+import useCartStore, { CartItem } from '@/lib/hooks/useCartStore';
 import Image from 'next/image';
 
+// Define a Product interface
+interface Product {
+  productId: string;
+  description: string;
+  categories: string[];
+  items: Array<{
+    price: {
+      regular: number;
+    };
+  }>;
+  images?: Array<{
+    perspective: string;
+    sizes: Array<{
+      size: string;
+      url: string;
+    }>;
+  }>;
+}
 
 export default function Page() {
-
   const cart = useCartStore(state => state.cart)
   const addToCart = useCartStore(state => state.addToCart)
-  console.log("This is the cart" , cart)
 
-  const [sortOrder, setSortOrder] = useState('ASC'); 
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC'); 
 
-
-
-
-
-  const handleAddToCart = (use: any) => {
-    console.log(use)
-    addToCart( { product:use, quantity:1 } )
+  const handleAddToCart = (product: Product) => {
+    console.log(product)
+    const cartItem: CartItem = {
+      productId: product.productId,
+      quantity: 1,
+      description: product.description,
+      items: product.items.map(item => ({
+        price: { regular: item.price.regular },
+        image: product.images?.[0]?.sizes.find(size => size.size === 'xlarge')
+      }))
+    };
+    addToCart({ product: cartItem, quantity: 1 })
   }
-
-
-
 
   const searchParams = useSearchParams()
   const search = searchParams.get('term')
   console.log("The search is for: " + search)
 
-  const [results, setResults] = useState([]);
-
-
-
+  const [results, setResults] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -48,7 +63,7 @@ export default function Page() {
             'method': 'GET',
           },
         });
-        const data = await res.json();
+        const data: Product[] = await res.json();
         console.log(data);
         setResults(data)
       } catch (err) {
@@ -60,15 +75,12 @@ export default function Page() {
   }, [search]);
 
   useEffect(() => {
-    if (sortOrder === 'ASC') {
-      setResults(results => [...results].sort((a, b) => (a.items?.[0]?.price?.regular - b.items?.[0]?.price?.regular)));
-    } 
-    else {
-      setResults(results => [...results].sort((a, b) => (b.items?.[0]?.price?.regular - a.items?.[0]?.price?.regular)));
-    }
-  }, [sortOrder, results.length]);
-
-
+    setResults(prevResults => [...prevResults].sort((a, b) => {
+      const priceA = a.items[0]?.price?.regular ?? 0;
+      const priceB = b.items[0]?.price?.regular ?? 0;
+      return sortOrder === 'ASC' ? priceA - priceB : priceB - priceA;
+    }));
+  }, [sortOrder]);
 
   return (
     <div className="space-y-6 grid md:grid-cols-[240px_1fr] gap-6 items-start max-w-8xl mx-auto px-4 py-6">
@@ -103,46 +115,41 @@ export default function Page() {
         <Button onClick={() => setSortOrder('DESC')}>Price High to Low</Button>
       </div>
 
-
-
       <div className="grid gap-4">
-      <h1 className='font-bold'>Search results for {search}</h1>
+        <h1 className='font-bold'>Search results for {search}</h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          
-          {results.map((product, index) => (
-            
-              <Card key={index}>
-                  <Link  href={`/products/${product.productId}`}>
-                  <div className="aspect-card">
-                      <img
-                      alt={product.description} // Assuming the item has a name field
-                      className="aspect-object object-cover rounded-t-lg"
-                      src={(product.images && product.images.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge'))?.url || 'default-image-url'}
-                      />
-                  </div>
-                  </Link>
-                  <CardContent className="flex flex-col gap-2 py-4">
-                    <Link  href={`/products/${product.productId}`}>
-                      <h3 className="font-semibold tracking-tight">{product.description}</h3>
-                    </Link>
-                      <small className="text-sm leading-none text-gray-500 dark:text-gray-400">{product.categories[0]}</small> 
-                      <h4 className="font-semibold">${product.items?.[0]?.price?.regular ?? 'Unavailable'}</h4>
-                      <Button size="sm" onClick={() => handleAddToCart(product)}>Add To Cart</Button>
-                  </CardContent>
-              </Card>
+          {results.map((product) => (
+            <Card key={product.productId}>
+              <Link href={`/products/${product.productId}`}>
+                <div className="aspect-card">
+                  <img
+                    alt={product.description}
+                    className="aspect-object object-cover rounded-t-lg"
+                    src={product.images?.find(image => image.perspective === 'front')?.sizes.find(size => size.size === 'xlarge')?.url || 'default-image-url'}
+                  />
+                </div>
+              </Link>
+              <CardContent className="flex flex-col gap-2 py-4">
+                <Link href={`/products/${product.productId}`}>
+                  <h3 className="font-semibold tracking-tight">{product.description}</h3>
+                </Link>
+                <small className="text-sm leading-none text-gray-500 dark:text-gray-400">{product.categories[0]}</small> 
+                <h4 className="font-semibold">${product.items[0]?.price?.regular.toFixed(2) ?? 'Unavailable'}</h4>
+                <Button size="sm" onClick={() => handleAddToCart(product)}>Add To Cart</Button>
+              </CardContent>
+            </Card>
           ))}
-          
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-                <Button size="sm" variant="outline">
-                <ChevronLeftIcon className="w-3 h-3 -translate-x-1" />
-                Prev
-                </Button>
-                <Button size="sm" variant="outline">
-                Next
-                <ChevronRightIcon className="w-3 h-3 -translate-x-1" />
-                </Button>
+            <Button size="sm" variant="outline">
+              <ChevronLeftIcon className="w-3 h-3 -translate-x-1" />
+              Prev
+            </Button>
+            <Button size="sm" variant="outline">
+              Next
+              <ChevronRightIcon className="w-3 h-3 -translate-x-1" />
+            </Button>
           </div>
         </div>
       </div>
@@ -150,7 +157,7 @@ export default function Page() {
   )
 }
 
-function ChevronLeftIcon(props) {
+function ChevronLeftIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -169,8 +176,7 @@ function ChevronLeftIcon(props) {
   )
 }
 
-
-function ChevronRightIcon(props) {
+function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -189,8 +195,7 @@ function ChevronRightIcon(props) {
   )
 }
 
-
-function SearchIcon(props) {
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
