@@ -1,6 +1,7 @@
 'use client'
+
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -28,7 +29,7 @@ interface Product {
   }>;
 }
 
-export default function Page() {
+function ProductsContent() {
   const cart = useCartStore(state => state.cart)
   const addToCart = useCartStore(state => state.addToCart)
 
@@ -212,6 +213,14 @@ function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
     </svg>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
   )
 }
 
