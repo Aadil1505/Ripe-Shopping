@@ -17,23 +17,6 @@ export default async function Page() {
 
   return (
     <main>
-      {/* <h1>HOME PAGE</h1>
-      <div>
-        <Button>
-          <LoginLink>Sign in</LoginLink>
-        </Button>
-        <Button>
-          <RegisterLink>Sign Up</RegisterLink>
-        </Button>
-        <Button>
-          <LogoutLink>Log Out</LogoutLink>
-        </Button>
-        <Link className={buttonVariants({ variant: "outline" })} href='https://google.com'>Click here</Link>
-      </div>
-      <div>
-        User:{user?.given_name}
-      </div> */}
-      
       {/* DIVIDER */}
       <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
