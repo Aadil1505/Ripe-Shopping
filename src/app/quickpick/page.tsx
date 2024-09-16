@@ -60,25 +60,33 @@ export default function Page() {
       return;
     }
     try {
-      const fileContent = await file.text();
-      const items = await convertor1(fileContent);
-      console.log(items);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Image = e.target?.result as string;
+        const items = await convertor1(base64Image);
+        console.log(items);
 
-      const productPromises = items.map(item => fetchProducts(item));
-      const productResults = await Promise.all(productPromises);
-      const products = productResults.flatMap(result => result).filter(Boolean);
+        const products: Product[] = [];
 
-      products.forEach(product => {
-        const cartItem: CartItem = {
-          productId: product.productId,
-          quantity: 1,
-          description: product.description,
-          items: product.items
-        };
-        addToCart({ product: cartItem, quantity: 1 });
-      });
+        for (const item of items) {
+          const productResults = await fetchProducts(item);
+          if (productResults.length > 0) {
+            const product = productResults[0]; // Take only the first product
+            products.push(product);
+            
+            const cartItem: CartItem = {
+              productId: product.productId,
+              quantity: 1,
+              description: product.description,
+              items: product.items
+            };
+            addToCart({ product: cartItem, quantity: 1 });
+          }
+        }
 
-      setAdded(products);
+        setAdded(products);
+      };
+      reader.readAsDataURL(file);
     } 
     catch (error) {
       alert((error as Error).message);
@@ -147,5 +155,3 @@ export default function Page() {
     </div>
   );
 }
-
-
