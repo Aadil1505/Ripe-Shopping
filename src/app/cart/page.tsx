@@ -64,7 +64,7 @@ export default function Page() {
                   alt={product.description || "Product image"}
                   className="rounded-md"
                   height={80}
-                  src={product.items[0]?.image?.url || "/placeholder-image.jpg"}
+                  src={product.items[0]?.image?.url || `https://www.kroger.com/product/images/xlarge/front/${product.productId}`}
                   style={{
                     aspectRatio: "80/80",
                     objectFit: "cover",
