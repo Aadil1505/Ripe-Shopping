@@ -103,6 +103,7 @@ export default function Page() {
             <p className="text-gray-500 dark:text-gray-400">
               Drag and drop an image of a shopping list and we'll make your cart!
             </p>
+            <a download href='/quickpick-test.jpeg'>Sample Image</a>
           </div>
           <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-600">
             <div className="flex flex-col items-center justify-center space-y-2">
