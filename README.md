@@ -6,17 +6,6 @@
 
 ![Logo](https://i.imgur.com/mQdGWqa.png)
 
-
-## Authors
-
-- [@Aadil1505](https://github.com/Aadil1505)
-
-- [@June-Lo](https://github.com/June-Lo)
-
-- [@rpontillo1](https://github.com/rpontillo1)
-
-- [@shreyakembhavi](https://github.com/shreyakembhavi)
-
 ## Tech Stack
 
 **Framework:** Next Js

@@ -1,39 +1,43 @@
 "use client"
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { Upload } from 'lucide-react';
+
+import { useState, ChangeEvent, FormEvent } from 'react'
+import { Upload, ShoppingCart } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import convertor1 from "@/lib/api/quickpick";
-import useCartStore, { CartItem } from '@/lib/hooks/useCartStore';
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import convertor1 from "@/lib/api/quickpick"
+import useCartStore, { CartItem } from '@/lib/hooks/useCartStore'
 
 interface Product {
-  productId: string;
-  description: string;
+  productId: string
+  description: string
   items: Array<{
-    price: { regular: number };
-    image?: { url: string };
-  }>;
+    price: { regular: number }
+    image?: { url: string }
+  }>
 }
 
-export default function Page() {
-  const [file, setFile] = useState<File | null>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>('');
-  const [added, setAdded] = useState<Product[]>([]);
-  const [showAddedItems, setShowAddedItems] = useState(false);
-  const addToCart = useCartStore(state => state.addToCart);
+export default function QuickPickPage() {
+  const [file, setFile] = useState<File | null>(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>('')
+  const [added, setAdded] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const addToCart = useCartStore(state => state.addToCart)
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+    const selectedFile = event.target.files?.[0]
     if (selectedFile) {
-      setFile(selectedFile);
-      const reader = new FileReader();
+      setFile(selectedFile)
+      const reader = new FileReader()
       reader.onloadend = () => {
-        setImagePreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
+        setImagePreviewUrl(reader.result as string)
+      }
+      reader.readAsDataURL(selectedFile)
     }
-  };
+  }
 
   const fetchProducts = async (term: string): Promise<Product[]> => {
     try {
@@ -42,117 +46,152 @@ export default function Page() {
           'Accept': 'application/json',
           'method': 'GET',
         },
-      });
-      const data: Product[] = await res.json();
-      console.log(data);
-      return data;
+      })
+      const data: Product[] = await res.json()
+      return data
     } catch (err) {
-      console.log(err);
-      return [];
+      console.error(err)
+      return []
     }
-  };
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setShowAddedItems(true);
-    if (!file) {
-      alert('Please select a file to upload.');
-      return;
-    }
-    try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64Image = e.target?.result as string;
-        const items = await convertor1(base64Image);
-        console.log(items);
+    event.preventDefault()
+    setIsLoading(true)
+    setError(null)
+    setAdded([])
 
-        const products: Product[] = [];
+    if (!file) {
+      setError('Please select a file to upload.')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64Image = e.target?.result as string
+        const items = await convertor1(base64Image)
+
+        const products: Product[] = []
 
         for (const item of items) {
-          const productResults = await fetchProducts(item);
+          const productResults = await fetchProducts(item)
           if (productResults.length > 0) {
-            const product = productResults[0]; // Take only the first product
-            products.push(product);
+            const product = productResults[0]
+            products.push(product)
             
             const cartItem: CartItem = {
               productId: product.productId,
               quantity: 1,
               description: product.description,
               items: product.items
-            };
-            addToCart({ product: cartItem, quantity: 1 });
+            }
+            addToCart({ product: cartItem, quantity: 1 })
           }
         }
 
-        setAdded(products);
-      };
-      reader.readAsDataURL(file);
+        setAdded(products)
+        setIsLoading(false)
+      }
+      reader.readAsDataURL(file)
     } 
     catch (error) {
-      alert((error as Error).message);
+      setError((error as Error).message)
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-12 md:py-20 px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-12">
-      {/* Image Upload Section */}
-      <div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold">Upload Image</h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              Drag and drop an image of a shopping list and we'll make your cart!
-            </p>
-            <a download href='/quickpick-test.jpeg'>Sample Image</a>
-          </div>
-          <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-600">
-            <div className="flex flex-col items-center justify-center space-y-2">
-              <Upload className="h-8 w-8 text-gray-500 dark:text-gray-400" />
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Drag and drop your image below
-              </p>
-              <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label htmlFor="picture">Picture</Label>
-                <Input id="picture" type="file" onChange={handleFileChange} />
+    <div className="container mx-auto py-12 px-4">
+      <h1 className="text-4xl font-bold text-center mb-8">QuickPick Shopping List</h1>
+      <div className="grid md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upload Image</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Drag and drop an image of a shopping list and we'll make your cart!
+                </p>
+                <a href='/quickpick-test.jpeg' download className="text-sm text-primary hover:underline">
+                  Download Sample Image
+                </a>
               </div>
-            </div>
-          </div>
-          <Button className="w-full" type="submit">
-            Submit
-          </Button>
-        </form>
+              <div className="rounded-lg border-2 border-dashed border-input p-6">
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Drag and drop your image here
+                  </p>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="picture">Or choose a file</Label>
+                    <Input id="picture" type="file" onChange={handleFileChange} accept="image/*" />
+                  </div>
+                </div>
+              </div>
+              <Button className="w-full" type="submit" disabled={isLoading}>
+                {isLoading ? 'Processing...' : 'Submit'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Image Preview</CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center h-[300px]">
+            {imagePreviewUrl ? (
+              <img
+                src={imagePreviewUrl}
+                alt="Uploaded Preview"
+                className="max-w-full max-h-full object-contain"
+              />
+            ) : (
+              <p className="text-muted-foreground">No image uploaded yet</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Image Preview Section */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">Image Preview</h1>
-        {imagePreviewUrl && (
-          <div>
-            <img
-              src={imagePreviewUrl}
-              alt="Uploaded Preview"
-              className="mt-4 mx-auto max-w-xs"
-            />
-          </div>
-        )}
-      </div>
+      {error && (
+        <Alert variant="destructive" className="mt-8">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-      {showAddedItems && (
-        <div className="col-span-full text-center mt-8">
-          <h2 className="text-3xl font-bold">We Added These Items To Your Cart...</h2>
-          {added.length > 0 ? (
-            added.map((product, index) => (
-              <div key={index}>
-                <h1>{product.description}</h1>
-              </div>
-            ))
-          ) : (
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            </div>
-          )}
+      {added.length > 0 && (
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <ShoppingCart className="mr-2" />
+              Added to Your Cart
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {added.map((product, index) => (
+                <li key={index} className="flex items-center justify-between p-2 bg-secondary rounded-md">
+                  <span>{product.description}</span>
+                  <span className="font-semibold">
+                    ${product.items[0]?.price.regular.toFixed(2)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
         </div>
       )}
     </div>
-  );
+  )
 }
