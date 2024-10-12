@@ -63,7 +63,7 @@ export default function Page({ params }: { params: { orderId: string } }) {
   useEffect(() => {
     const fetchOrderAndProducts = async () => {
       try {
-        const orderRes = await fetch(`/api/reciept/${params.orderId}`, {
+        const orderRes = await fetch(`/api/receipt/${params.orderId}`, {
           headers: {
             'Accept': 'application/json',
             'method': 'GET',

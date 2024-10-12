@@ -8,5 +8,5 @@ import {
   }
   
   export const config = {
-    matcher: ["/tester", "/account", "/cart", "/orders", "/reciept"],
+    matcher: ["/tester", "/account", "/cart", "/orders", "/receipt"],
   };

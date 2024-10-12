@@ -47,7 +47,7 @@ export default function Page() {
 
 
   const testfunc = (orderId: string) => {
-    router.push(`/reciept/${orderId}`);
+    router.push(`/receipt/${orderId}`);
   }
 
 
